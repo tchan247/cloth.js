@@ -28,20 +28,60 @@
     
     // Cloth class
     window.Cloth = function(type, top, left, width, height) {
-        var name;
-		
 		document.createElement(type);
+        var name;
+		var id = generateId();
+		var element = document.getElementById();
 		
-		this.getName = funciton() {
+		this.getName = function() {
 			return name;
 		}
 		
-		this.setName = function() {
-		
+		this.setName = function(str) {
+			name = str;
 		}
 		
-        
+		this.getDimensions = function() {
+			return [top, left, width, height];
+		}
+		
+		this.setDimensions = function(dim) {
+			if(dim.length === 4 && dim.every(function(x){return typeof x === "number"})) {
+				top = dim[0];
+				left = dim[1];
+				width = dim[2];
+				height = dim[3];
+			}
+		}
     }
+	
+	// other closure-defined Cloth class
+	var createCloth = function(type, top, left, width, height) {
+		document.createElement(type);
+        var name;
+		var id = generateId();
+		var element = document.getElementById();
+		
+		return {
+			getName : function() {
+				return name;
+			},
+			setName : function(str) {
+			name = str;
+			},
+			getDimensions : function() {
+			return [top, left, width, height];
+			},
+			setDimensions : function(dim) {
+				if(dim.length === 4 && dim.every(function(x){return typeof x === "number"})) {
+					top = dim[0];
+					left = dim[1];
+					width = dim[2];
+					height = dim[3];
+				}
+			}
+		};
+	}
     
     /*
         Helper functions -------------------------------------------------------
@@ -153,27 +193,44 @@
 			var unweaved = [];
 			
             for(var i=0, l=anArray.length; i<l; i++) {
-                
+
             }
 			
 			return unweaved;
         }
 		
-		// utility functions -----------------------------------------------------
-		
-		// all collections in the collections array have same property value (need to re-implement)
-		toolkit.isMatching = function(collections, properties) {
-			for(var key in properties) {
-				for(var i=1, l=collections.length; i<l; i++) {
-					if(x.properties[key] !== collections[0].property[key])
-						return false;
-				}
+	// utility functions -----------------------------------------------------
+	
+	toolkit.generateId = function() {
+		var num = 0;
+	}
+	
+	// all collections in the collections array have same property value (need to re-implement)
+	toolkit.isMatching = function(collections, properties) {
+		for(var key in properties) {
+			for(var i=1, l=collections.length; i<l; i++) {
+				if(x.properties[key] !== collections[0].property[key])
+					return false;
 			}
-			
-			return true;
 		}
+		
+		return true;
+	}
+	
+	toolkit.randomEle = function(list) {
+		return  list[~~(Math.random() * list.length-1)];
+	}
+	
+	toolkit.randomNum = function(n, round) {
+		return round? Math.floor(Math.randon * n) : Math.random * n;
+	}
+	
+	toolkit.type = function(anObject) {
+		switch(anObject) {
+		
+		}
+	}
         
     return toolkit;
 
 })()
-
