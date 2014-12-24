@@ -1,76 +1,53 @@
-(function() {
+window.cloth = function() {
     
     // Bundle data structure for Cloth objects
-    window.Bundle = function() {
-        var pile = {};
+    var createBundle = function() {
+        var bundle = [];
         
-        this.addCloth = function(clothObject) {
-            pile[clothObject.name] = clothObject.name;
-        }
-        
-        this.getCloth = function() {
-            
-        }
-        
-        this.getBundle = function() {
-            return pile;
-        }
-        
-        this.removeCloth = function() {
-            
-        }
-        
-        this.clearBundle = function() {
-            pile = {};
-        }
-        
-    }
-    
-    // Cloth class
-    window.Cloth = function(type, top, left, width, height) {
-		document.createElement(type);
-        var name;
-		var id = generateId();
-		var element = document.getElementById();
-		
-		this.getName = function() {
-			return name;
-		}
-		
-		this.setName = function(str) {
-			name = str;
-		}
-		
-		this.getDimensions = function() {
-			return [top, left, width, height];
-		}
-		
-		this.setDimensions = function(dim) {
-			if(dim.length === 4 && dim.every(function(x){return typeof x === "number"})) {
-				top = dim[0];
-				left = dim[1];
-				width = dim[2];
-				height = dim[3];
+		return {
+			addCloth : function(clothObject) {
+				bundle[bundle.length] = clothObject;
+				return this;
+			},
+			getCloth : function(n) {
+				return bundle[n];
+			},
+			getBundle : function() {
+				return bundle;
+			},
+			removeCloth : function() {
+				
+			},
+			clearBundle : function() {
+				bundle = [];
+				return this;
+			},
+			// adjust position of the whole bundle
+			setPosition : function(top, left) {
+				var i = bundle.length;
+				while(i--) {
+					var dim = bundle[i].getDimensions();
+					bundle[i].setDimensions([top,left,dim[2],dim[3]]);
+				}
+				return this;
 			}
-		}
+		}  
+		
     }
 	
-	// other closure-defined Cloth class
+	// closure-defined Cloth class
 	var createCloth = function(type, top, left, width, height) {
 		document.createElement(type);
         var name;
-		var id = generateId();
+		var id = generateId().getNum();
 		var element = document.getElementById();
 		
 		return {
 			getName : function() {
 				return name;
 			},
-			setName : function(str) {
-			name = str;
-			},
 			getDimensions : function() {
-			return [top, left, width, height];
+				return [top, left, width, height];
 			},
 			setDimensions : function(dim) {
 				if(dim.length === 4 && dim.every(function(x){return typeof x === "number"})) {
@@ -157,6 +134,10 @@
                 return [firstHalf,secondHalf];
             } 
       }
+	  
+		toolkit.shuffle = function() {
+			
+		}
       
         // combines two arrays by inserting the second array at 
         // the index in the first array
@@ -201,8 +182,30 @@
 		
 	// utility functions -----------------------------------------------------
 	
+	toolkit.checkType = function(anObject, str) {
+		var lookup = toolkit.lookup;
+		
+		return lookup[str](anObject);
+	}
+	
+	// create an id object
 	toolkit.generateId = function() {
 		var num = 0;
+		
+		return {
+				increment: function() {
+					num++;
+					return this;
+				},
+				decrement: function() {
+					num--;
+					return this;
+				},
+				getNum: function() {
+					num++;
+					return "cloth" + num;
+				}
+			}
 	}
 	
 	// all collections in the collections array have same property value (need to re-implement)
@@ -225,12 +228,28 @@
 		return round? Math.floor(Math.randon * n) : Math.random * n;
 	}
 	
-	toolkit.type = function(anObject) {
-		switch(anObject) {
+	// lookup table ----------------------------------------------------------
+	
+	// lookup table useful for checking object types and maybe more
+	toolkit.lookup = {
+		array : function(anObject) {
+		
+		},
+		cloth : function (anObject) {
+		
+		},
+		collection : function(anObject) {
+		
+		},
+		object : function(anObject) {
 		
 		}
+	
 	}
         
     return toolkit;
 
-})()
+}
+
+window.onload = cloth;
+
