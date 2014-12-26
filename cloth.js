@@ -3,10 +3,13 @@ window.cloth = function() {
     // Bundle data structure for Cloth objects
     var createBundle = function() {
         var bundle = [];
+		var size;
         
 		return {
 			addCloth : function(clothObject) {
-				bundle[bundle.length] = clothObject;
+				if(toolkit.checkType(clothObject, "cloth")) {
+					bundle[bundle.length] = clothObject;
+				}
 				return this;
 			},
 			getCloth : function(n) {
@@ -39,7 +42,7 @@ window.cloth = function() {
 	var createCloth = function(type, top, left, width, height) {
 		document.createElement(type);
         var name;
-		var id = generateId().getNum();
+		var id = generateId().increment().getNum();
 		var element = document.getElementById();
 		
 		return {
@@ -66,32 +69,11 @@ window.cloth = function() {
     var toolkit = {};
     
     //collection functions -----------------------------------------------------
-    
-    
-      // determine if object is an object literal
-      toolkit.isObject = function(anObject) {
-        
-        var type = typeof anObject === "object";
-        
-        var hasProp = anObject.hasOwnProperty === Object.prototype.hasOwnProperty;
-        
-        return type && hasProp;
-      }
-      
-      // determine if object is an array
-      toolkit.isArray = function(anObject) {
-          return Array.isArray(anObject);
-      }
-      
-      // determine if a collection
-      toolkit.isCollection = function(anObject) {
-          return isArray(anObject) || isObject(anObject);
-      }
       
       // get collection size
       toolkit.size = function(collection) {
           var count = 0;
-          if(isCollection(collection)) { 
+          if(checkType(collection, "collection")) { 
               for(var i in collection) {
                   count++;
               }
@@ -104,7 +86,7 @@ window.cloth = function() {
       toolkit.validIndex = function(collection, args) {
         var i=0, l=args.length, valid = true, depth = collection;
         
-        if(isCollection(collection)) {
+        if(checkType(collection, "collection")) {
             while(valid && i < l) { 
                 if(depth[args[i]] !== undefined) {
                     depth = depth[args[i]];
@@ -127,7 +109,7 @@ window.cloth = function() {
       // returns an array of two empty arrays if array argument is empty
       toolkit.cut = function(anArray, index) {
           
-            if(isArray(anArray)) {
+            if(checkType(anArray, "array")) {
                 var firstHalf = anArray.slice(0,index);
                 var secondHalf = anArray.slice(index);
                 
@@ -183,9 +165,7 @@ window.cloth = function() {
 	// utility functions -----------------------------------------------------
 	
 	toolkit.checkType = function(anObject, str) {
-		var lookup = toolkit.lookup;
-		
-		return lookup[str](anObject);
+		return toolkit.lookup[str](anObject);
 	}
 	
 	// create an id object
@@ -202,7 +182,6 @@ window.cloth = function() {
 					return this;
 				},
 				getNum: function() {
-					num++;
 					return "cloth" + num;
 				}
 			}
@@ -233,16 +212,22 @@ window.cloth = function() {
 	// lookup table useful for checking object types and maybe more
 	toolkit.lookup = {
 		array : function(anObject) {
-		
+			return Array.isArray(anObject);
 		},
-		cloth : function (anObject) {
-		
+		bundle : function(anObject) {
+			return anObject.hasOwnProperty("addCloth");
+		},
+		cloth : function(anObject) {
+			return anObject.hasOwnProperty("getName");
 		},
 		collection : function(anObject) {
-		
+			return Array.isArray(anObject) 
+				|| ((typeof anObject === "object") 
+					&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty));
 		},
 		object : function(anObject) {
-		
+			return (typeof anObject === "object") 
+				&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty);
 		}
 	
 	}
@@ -252,4 +237,3 @@ window.cloth = function() {
 }
 
 window.onload = cloth;
-
