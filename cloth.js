@@ -70,6 +70,10 @@ window.cloth = function() {
     
     //collection functions -----------------------------------------------------
       
+	  toolkit.map = function() {
+	  
+	  }
+	  
       // get collection size
       toolkit.size = function(collection) {
           var count = 0;
@@ -81,7 +85,7 @@ window.cloth = function() {
           return count;
       }
       
-      //check if keys/indicies on single/multidimentional collection is not undefined
+      //check if keys/indicies on single/multidimentional collection is defined
       // takes a collection and an array of keys/indicies
       toolkit.validIndex = function(collection, args) {
         var i=0, l=args.length, valid = true, depth = collection;
@@ -116,10 +120,28 @@ window.cloth = function() {
                 return [firstHalf,secondHalf];
             } 
       }
-	  
-		toolkit.shuffle = function() {
+ 
+	// shuffle the elements in an array
+	toolkit.shuffle = function(anArray) {
+		var listCopy = anArray.slice(),
+			arr = [],
+			len = listCopy.length;
+		
+		while (len > 1) {
+			var rand = ~~(Math.random() * len-1),
+				pop = listCopy.pop();
 			
+			arr[arr.length] = listCopy[rand];
+			
+			if(rand < len) {
+				listCopy[rand] = pop;
+			}
 		}
+		
+		arr[arr.length] = listCopy[0];
+		
+		return arr;
+	}
       
         // combines two arrays by inserting the second array at 
         // the index in the first array
@@ -217,19 +239,33 @@ window.cloth = function() {
 		bundle : function(anObject) {
 			return anObject.hasOwnProperty("addCloth");
 		},
+		boolean : function(anObject) {
+			return typeof anObject === "boolean";
+		},
 		cloth : function(anObject) {
 			return anObject.hasOwnProperty("getName");
 		},
 		collection : function(anObject) {
 			return Array.isArray(anObject) 
 				|| ((typeof anObject === "object") 
-					&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty));
+					&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty)); // excludes null
+		},
+		integer : function(anObject) {
+			return (typeof anObject === "number")
+				&& (anObject === Math.floor(anObject));
+		},
+		number : function(anObject) {
+			return typeof anObject === "number";
 		},
 		object : function(anObject) {
-			return (typeof anObject === "object") 
-				&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty);
+			return typeof anObject === "object";
+		},
+		string : function(anObject) {
+			return typeof anObject === "string";
+		},
+		undefined : function(anObject) {
+			return typeof anObject === "undefined";
 		}
-	
 	}
         
     return toolkit;
