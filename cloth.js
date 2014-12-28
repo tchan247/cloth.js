@@ -70,9 +70,69 @@ window.cloth = function() {
     
     //collection functions -----------------------------------------------------
       
-	  toolkit.map = function() {
-	  
+	  toolkit.map = function(anObject) {
+		if(checkType(anObject, "array")) {
+			for(var i=0)
+		}
 	  }
+	  
+	  // shuffle the elements in an array
+		toolkit.shuffle = function(collection) {
+		
+			if(Array.isArray(collection)) {
+				var listCopy = collection.slice(),
+					arr = [],
+					len = listCopy.length;
+				
+				while (len > 1) {
+					var rand = ~~(Math.random() * len-1),
+						pop = listCopy.pop();
+					
+					arr[arr.length] = listCopy[rand];
+					
+					if(rand < len) {
+						listCopy[rand] = pop;
+					}
+				}
+				
+				arr[arr.length] = listCopy[0];
+				
+				return arr;
+				// object shuffle. needs work and refactoring
+			} else if (collection.hasOwnProperty === Object.prototype.hasOwnProperty) {
+				var shuffle = function(obj) {
+				var newObj = {};
+				var values = []
+				var newValues = [];
+				
+				for(var key in obj) {
+					values[values.length] = obj[key]
+				}
+				
+				var l = values.length-1;
+				
+				while(l > -1) {
+					var rand = Math.random() * l;
+					
+					
+					
+					if(rand !== l) {
+						var tmp = values[l];
+						values[l] = values[rand]
+						values[rand] = tmp;
+					}
+					newValues[newValues.length] = values.pop();
+					
+					l--;
+				}
+				
+				for(key in obj) {
+					newObj[key] = newValues.pop();
+				}
+				
+				return newObj;
+			}
+		}
 	  
       // get collection size
       toolkit.size = function(collection) {
@@ -120,28 +180,6 @@ window.cloth = function() {
                 return [firstHalf,secondHalf];
             } 
       }
- 
-	// shuffle the elements in an array
-	toolkit.shuffle = function(anArray) {
-		var listCopy = anArray.slice(),
-			arr = [],
-			len = listCopy.length;
-		
-		while (len > 1) {
-			var rand = ~~(Math.random() * len-1),
-				pop = listCopy.pop();
-			
-			arr[arr.length] = listCopy[rand];
-			
-			if(rand < len) {
-				listCopy[rand] = pop;
-			}
-		}
-		
-		arr[arr.length] = listCopy[0];
-		
-		return arr;
-	}
       
         // combines two arrays by inserting the second array at 
         // the index in the first array
@@ -248,7 +286,7 @@ window.cloth = function() {
 		collection : function(anObject) {
 			return Array.isArray(anObject) 
 				|| ((typeof anObject === "object") 
-					&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty)); // excludes null
+					&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty));
 		},
 		integer : function(anObject) {
 			return (typeof anObject === "number")
@@ -257,8 +295,10 @@ window.cloth = function() {
 		number : function(anObject) {
 			return typeof anObject === "number";
 		},
-		object : function(anObject) {
-			return typeof anObject === "object";
+		// object literal
+		object : function(anObject) {	
+			return (typeof anObject === "object") 
+					&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty);  // excludes null
 		},
 		string : function(anObject) {
 			return typeof anObject === "string";
