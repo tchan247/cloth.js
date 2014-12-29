@@ -3,12 +3,13 @@ window.cloth = function() {
     // Bundle data structure for Cloth objects
     var createBundle = function() {
         var bundle = [];
-		var size;
+		var size = 0;
         
 		return {
 			addCloth : function(clothObject) {
 				if(toolkit.checkType(clothObject, "cloth")) {
-					bundle[bundle.length] = clothObject;
+					bundle[size] = clothObject;
+					size++;
 				}
 				return this;
 			},
@@ -70,9 +71,24 @@ window.cloth = function() {
     
     //collection functions -----------------------------------------------------
       
-	  toolkit.map = function(anObject) {
-		if(checkType(anObject, "array")) {
-			for(var i=0)
+	  toolkit.map = function(anObject, iterator) {
+		if(Array.isArray(anObject)) {
+			var copy = anObject.slice();
+			for(var i=0, l=copy.length; i < l; i++) {
+				copy[i] = iterator.call(null, copy[i], i, copy);
+			}
+			
+			return copy;
+			
+		} else if ((typeof anobject === "object")
+			&& (collection.hasOwnProperty === Object.prototype.hasOwnProperty)) {
+			var copy = {};
+			for(var i in anObject) {
+				copy[i] = anObject[i];
+				copy[i] = interator.call(null, copy[i], i, copy);
+			}
+			
+			return copy;
 		}
 	  }
 	  
@@ -99,7 +115,9 @@ window.cloth = function() {
 				
 				return arr;
 				// object shuffle. needs work and refactoring
-			} else if (collection.hasOwnProperty === Object.prototype.hasOwnProperty) {
+			} else if ((typeof anobject === "object")
+				&& (collection.hasOwnProperty === Object.prototype.hasOwnProperty)) {
+				
 				var shuffle = function(obj) {
 				var newObj = {};
 				var values = []
@@ -137,7 +155,10 @@ window.cloth = function() {
       // get collection size
       toolkit.size = function(collection) {
           var count = 0;
-          if(checkType(collection, "collection")) { 
+          if(Array.isArray(collection) 
+			|| ((typeof anobject === "object")
+				&& (collection.hasOwnProperty === Object.prototype.hasOwnProperty))) {
+				
               for(var i in collection) {
                   count++;
               }
@@ -287,6 +308,9 @@ window.cloth = function() {
 			return Array.isArray(anObject) 
 				|| ((typeof anObject === "object") 
 					&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty));
+		},
+		"function" : function(anObject) {
+			return typeof anObject === "function";
 		},
 		integer : function(anObject) {
 			return (typeof anObject === "number")
