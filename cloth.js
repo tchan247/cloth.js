@@ -43,7 +43,7 @@ window.cloth = function() {
 	var createCloth = function(type, top, left, width, height) {
 		document.createElement(type);
         var name;
-		var id = generateId().increment().getNum();
+		var id = toolkit.generateId();
 		var element = document.getElementById();
 		
 		return {
@@ -114,42 +114,35 @@ window.cloth = function() {
 				arr[arr.length] = listCopy[0];
 				
 				return arr;
-				// object shuffle. needs work and refactoring
-			} else if ((typeof anobject === "object")
+			} else if ((typeof collection === "object")
 				&& (collection.hasOwnProperty === Object.prototype.hasOwnProperty)) {
+
+				var newObj = {},
+					values = [],
+					newValues = [];
 				
-				var shuffle = function(obj) {
-				var newObj = {};
-				var values = []
-				var newValues = [];
+				for(var key in collection)
+					values[values.length] = collection[key]
 				
-				for(var key in obj) {
-					values[values.length] = obj[key]
-				}
+				var l = values.length;
 				
-				var l = values.length-1;
-				
-				while(l > -1) {
-					var rand = Math.random() * l;
-					
-					
+				while(l--) {
+					var rand = ~~(Math.random() * l);
 					
 					if(rand !== l) {
-						var tmp = values[l];
-						values[l] = values[rand]
+						var tmp = values[values.length-1];
+						values[values.length-1] = values[rand]
 						values[rand] = tmp;
 					}
-					newValues[newValues.length] = values.pop();
 					
-					l--;
+					newValues[newValues.length] = values.pop();
 				}
 				
-				for(key in obj) {
+				for(key in collection)
 					newObj[key] = newValues.pop();
-				}
 				
 				return newObj;
-			}
+				}
 		}
 	  
       // get collection size
@@ -243,94 +236,85 @@ window.cloth = function() {
 			return unweaved;
         }
 		
-	// utility functions -----------------------------------------------------
-	
-	toolkit.checkType = function(anObject, str) {
-		return toolkit.lookup[str](anObject);
-	}
-	
-	// create an id object
-	toolkit.generateId = function() {
-		var num = 0;
+		// utility functions -----------------------------------------------------
 		
-		return {
-				increment: function() {
-					num++;
-					return this;
-				},
-				decrement: function() {
-					num--;
-					return this;
-				},
-				getNum: function() {
-					return "cloth" + num;
+		toolkit.checkType = function(anObject, str) {
+			return toolkit.lookup[str](anObject);
+		}
+		
+		// generate a string id
+		toolkit.generateId = function() {
+			var num = 0;
+			
+			return function() {
+				num++;
+				return "cloth" + num;
+			}
+		}()
+		
+		// all collections in the collections array have same property value (need to re-implement)
+		toolkit.isMatching = function(collections, properties) {
+			for(var key in properties) {
+				for(var i=1, l=collections.length; i<l; i++) {
+					if(x.properties[key] !== collections[0].property[key])
+						return false;
 				}
 			}
-	}
-	
-	// all collections in the collections array have same property value (need to re-implement)
-	toolkit.isMatching = function(collections, properties) {
-		for(var key in properties) {
-			for(var i=1, l=collections.length; i<l; i++) {
-				if(x.properties[key] !== collections[0].property[key])
-					return false;
-			}
+			
+			return true;
 		}
 		
-		return true;
-	}
-	
-	toolkit.randomEle = function(list) {
-		return  list[~~(Math.random() * list.length-1)];
-	}
-	
-	toolkit.randomNum = function(n, round) {
-		return round? Math.floor(Math.randon * n) : Math.random * n;
-	}
-	
-	// lookup table ----------------------------------------------------------
-	
-	// lookup table useful for checking object types and maybe more
-	toolkit.lookup = {
-		array : function(anObject) {
-			return Array.isArray(anObject);
-		},
-		bundle : function(anObject) {
-			return anObject.hasOwnProperty("addCloth");
-		},
-		boolean : function(anObject) {
-			return typeof anObject === "boolean";
-		},
-		cloth : function(anObject) {
-			return anObject.hasOwnProperty("getName");
-		},
-		collection : function(anObject) {
-			return Array.isArray(anObject) 
-				|| ((typeof anObject === "object") 
-					&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty));
-		},
-		"function" : function(anObject) {
-			return typeof anObject === "function";
-		},
-		integer : function(anObject) {
-			return (typeof anObject === "number")
-				&& (anObject === Math.floor(anObject));
-		},
-		number : function(anObject) {
-			return typeof anObject === "number";
-		},
-		// object literal
-		object : function(anObject) {	
-			return (typeof anObject === "object") 
-					&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty);  // excludes null
-		},
-		string : function(anObject) {
-			return typeof anObject === "string";
-		},
-		undefined : function(anObject) {
-			return typeof anObject === "undefined";
+		toolkit.randomEle = function(list) {
+			return  list[~~(Math.random() * list.length-1)];
 		}
-	}
+		
+		toolkit.randomNum = function(n, round) {
+			return round? Math.floor(Math.randon * n) : Math.random * n;
+		}
+		
+		// lookup table ----------------------------------------------------------
+		
+		// lookup table useful for checking object types and maybe more
+		toolkit.lookup = {
+			array : function(anObject) {
+				return Array.isArray(anObject);
+			},
+			bundle : function(anObject) {
+				return anObject.hasOwnProperty("addCloth");
+			},
+			boolean : function(anObject) {
+				return typeof anObject === "boolean";
+			},
+			cloth : function(anObject) {
+				return anObject.hasOwnProperty("getName");
+			},
+			collection : function(anObject) {
+				return Array.isArray(anObject) 
+					|| ((typeof anObject === "object") 
+						&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty));
+			},
+			"function" : function(anObject) {
+				return typeof anObject === "function";
+			},
+			integer : function(anObject) {
+				return (typeof anObject === "number")
+					&& (anObject === Math.floor(anObject));
+			},
+			number : function(anObject) {
+				return typeof anObject === "number";
+			},
+			// object literal
+			object : function(anObject) {	
+				return (typeof anObject === "object") 
+						&& (anObject.hasOwnProperty === Object.prototype.hasOwnProperty);  // excludes null
+			},
+			string : function(anObject) {
+				return typeof anObject === "string";
+			},
+			undefined : function(anObject) {
+				return typeof anObject === "undefined";
+			}
+		}
         
     return toolkit;
 
